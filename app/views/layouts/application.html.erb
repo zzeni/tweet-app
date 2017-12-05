@@ -9,6 +9,17 @@
   </head>
 
   <body>
-    <%= yield %>
+    <div class="container mt-5">
+
+      <% flash.each do |name, msg| %>
+          <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
+      <% end %>
+
+      <%= yield %>
+
+      <footer class="footer">
+        <p>© The Tweet Monsters 2017</p>
+      </footer>
+    </div>
   </body>
 </html>

@@ -2,7 +2,7 @@ class TweetsController < ApplicationController
   before_action :set_tweet, only: [:show, :edit, :update, :destroy]
 
   def index
-    @tweets = Tweet.all
+    @tweets = Tweet.eager_load(:user).all
   end
 
   def show
@@ -18,45 +18,34 @@ class TweetsController < ApplicationController
   def create
     @tweet = Tweet.new(tweet_params)
 
-    respond_to do |format|
-      if @tweet.save
-        format.html { redirect_to @tweet, notice: 'Tweet was successfully created.' }
-        format.json { render :show, status: :created, location: @tweet }
-      else
-        format.html { render :new }
-        format.json { render json: @tweet.errors, status: :unprocessable_entity }
-      end
+    if @tweet.save
+      redirect_to @tweet, notice: 'Tweet was successfully created.'
+    else
+      render :new
     end
   end
 
   def update
-    respond_to do |format|
-      if @tweet.update(tweet_params)
-        format.html { redirect_to @tweet, notice: 'Tweet was successfully updated.' }
-        format.json { render :show, status: :ok, location: @tweet }
-      else
-        format.html { render :edit }
-        format.json { render json: @tweet.errors, status: :unprocessable_entity }
-      end
+    if @tweet.update(tweet_params)
+      redirect_to @tweet, notice: 'Tweet was successfully updated.'
+    else
+      render :edit
     end
   end
 
   def destroy
     @tweet.destroy
-    respond_to do |format|
-      format.html { redirect_to tweets_url, notice: 'Tweet was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to tweets_url, notice: 'Tweet was successfully destroyed.'
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_tweet
-      @tweet = Tweet.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_tweet
+    @tweet = Tweet.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def tweet_params
-      params.require(:tweet).permit(:body, :user_id)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def tweet_params
+    params.require(:tweet).permit(:body, :user_id)
+  end
 end

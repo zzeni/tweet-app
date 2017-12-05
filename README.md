@@ -172,4 +172,68 @@ Generated Éowyn with 9 tweets
 Generated Treebeard with 7 tweets
 ```
 
+Now it's time to fix the design.
+Delete all the content in `app/assets/stylesheets/scaffolds.scss` and leave the file empty.
+
+Replace the markup in `app/views/tweets/index.html.erb` with the following:
+
+```
+<h1 class="mb-4">Tweets</h1>
+
+<section class="tweets">
+  <% @tweets.each do |tweet| %>
+    <div class="card mb-3 border-primary">
+      <div class="card-header">
+        <%= l(tweet.created_at, format: :short) %>
+      </div>
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p><%= tweet.body %></p>
+          <footer class="small text-muted">-- <%= link_to tweet.user.name, tweet.user %></footer>
+        </blockquote>
+      </div>
+    </div>
+  <% end %>
+</section>
+```
+
+And in `app/views/layouts/application.html.erb` with the following:
+```
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tweeter</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+    <div class="container mt-5">
+
+      <% flash.each do |name, msg| %>
+          <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
+      <% end %>
+
+      <%= yield %>
+
+      <footer class="footer">
+        <p>© The Tweet Monsters 2017</p>
+      </footer>
+    </div>
+  </body>
+</html>
+```
+
+In the **TweetsController** cleanup all _json_ responses and change the **index** method like so:
+
+```
+def index
+  @tweets = Tweet.eager_load(:user).all
+end
+```
+
+This will load all **users** data in the result and will prevent additional DB requests later.
+
 
