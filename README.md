@@ -15,7 +15,7 @@ git commit -m"Initial commit"
 
 ### Models
 
-1. Database
+1. **Database**
 
    Add the following gems to **Gemfile**: [devise](https://github.com/plataformatec/devise), [paperclip](https://github.com/thoughtbot/paperclip), [faker](https://github.com/stympy/faker), [fabrication](https://github.com/paulelliott/fabrication), [pry-rails](https://github.com/rweng/pry-rails), [bootstrap 4](https://github.com/twbs/bootstrap-rubygem).
 
@@ -50,7 +50,7 @@ git commit -m"Initial commit"
    rails db:migrate
    ```
 
-1. Associations
+1. **Associations**
 
    Add the following associations to the **User** & **Tweet** models:
 
@@ -64,7 +64,7 @@ git commit -m"Initial commit"
      end
    ```
 
-1. Attached image
+1. **Attached image**
 
    Add the **Paperclip** stuff to the **User**:
 
@@ -78,7 +78,7 @@ git commit -m"Initial commit"
 
 ### Routes
 
-Configure routing and start your server:
+Configure the routing (in `config/router.rb`)
 
 ```
 Rails.application.routes.draw do
@@ -94,6 +94,8 @@ Rails.application.routes.draw do
 end
 ```
 
+and start your server:
+
 ```
 rails s -p 3056
 ```
@@ -102,156 +104,241 @@ rails s -p 3056
 
 Open your app's initial page (http://localhost:3056/). You'll get errors, because we've limited the routes for the tweets.
 
-Edit `app/views/tweets/index.html.erb`:
+1. **Paths**
 
-```
-<h1>Tweets</h1>
+   Edit `app/views/tweets/index.html.erb`:
 
-<table>
-  <thead>
-    <tr>
-      <th>Body</th>
-      <th>User</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+   ```
+   <h1>Tweets</h1>
 
-  <tbody>
-    <% @tweets.each do |tweet| %>
-      <tr>
-        <td><%= tweet.body %></td>
-        <td><%= tweet.user %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-```
+   <table>
+     <thead>
+       <tr>
+         <th>Body</th>
+         <th>User</th>
+         <th colspan="3"></th>
+       </tr>
+     </thead>
 
-Now if you reload the website, you will see an empty tweets page.
+     <tbody>
+       <% @tweets.each do |tweet| %>
+         <tr>
+           <td><%= tweet.body %></td>
+           <td><%= tweet.user %></td>
+         </tr>
+       <% end %>
+     </tbody>
+   </table>
+   ```
 
-Let's generate some fake data, using **Fabrication** and **database seeds**.
+   Now if you reload the website, you will see an empty tweets page.
 
-```
-rails g fabrication:model user
-rails g fabrication:model tweet
-```
+1. **Data**
 
-Edit the two files:
+   Let's generate some fake data, using **Fabrication** and **database seeds**.
 
-```
-Fabricator(:user) do
-  name { Faker::LordOfTheRings.unique.character }
-  email { Faker::Internet.unique.email }
-  password "123456"
-end
+   ```
+   rails g fabrication:model user
+   rails g fabrication:model tweet
+   ```
 
-Fabricator(:tweet) do
-  body { Faker::Lorem.paragraph(3) }
-end
-```
+   Edit the two generated files:
 
-In `db/seeds.rb` put this:
+   ```
+   # spec/fabricators/user_fabricator.rb
+   Fabricator(:user) do
+     name { Faker::LordOfTheRings.unique.character }
+     email { Faker::Internet.unique.email }
+     password "123456"
+   end
+   ```
 
-```
-User.destroy_all # will delete all users and all their tweets
+   ```
+   # spec/fabricators/tweet_fabricator.rb
+     Fabricator(:tweet) do
+     body { Faker::Lorem.paragraph(3) }
+   end
+   ```
 
-20.times do |i|
-  user = Fabricate(:user)
-  rand(10).times do
-    Fabricate(:tweet, user: user)
-  end
-  puts "Generated #{user.name} with #{user.tweets.count} tweets"
-end
-```
+   In `db/seeds.rb` put this:
 
-Now run `rails db:seed`
-You should see something like:
+   ```
+   User.destroy_all # will delete all users and all their tweets
 
-```
-Generated Frodo Baggins with 7 tweets
-Generated Barliman Butterbur with 1 tweets
-Generated Shelob with 2 tweets
-Generated Denethor with 2 tweets
-Generated Peregrin Took with 4 tweets
-Generated Legolas with 8 tweets
-Generated Glorfindel with 3 tweets
-Generated Faramir with 6 tweets
-Generated Éomer with 2 tweets
-Generated Quickbeam with 8 tweets
-Generated Samwise Gamgee with 8 tweets
-Generated Beregond with 9 tweets
-Generated Tom Bombadil with 8 tweets
-Generated Meriadoc Brandybuck with 7 tweets
-Generated Galadriel with 8 tweets
-Generated Shadowfax with 4 tweets
-Generated Théoden with 3 tweets
-Generated Gimli with 1 tweets
-Generated Éowyn with 9 tweets
-Generated Treebeard with 7 tweets
-```
+   20.times do |i|
+     user = Fabricate(:user)
+     rand(10).times do
+       Fabricate(:tweet, user: user)
+     end
+     puts "Generated #{user.name} with #{user.tweets.count} tweets"
+   end
+   ```
 
-Now it's time to fix the design.
-Delete all the content in `app/assets/stylesheets/scaffolds.scss` and leave the file empty.
+   Now run `rails db:seed`
 
-Replace the markup in `app/views/tweets/index.html.erb` with the following:
+   You should see something like:
 
-```
-<h1 class="mb-4">Tweets</h1>
+   ```
+   Generated Frodo Baggins with 7 tweets
+   Generated Barliman Butterbur with 1 tweets
+   Generated Shelob with 2 tweets
+   Generated Denethor with 2 tweets
+   Generated Peregrin Took with 4 tweets
+   Generated Legolas with 8 tweets
+   Generated Glorfindel with 3 tweets
+   Generated Faramir with 6 tweets
+   Generated Éomer with 2 tweets
+   Generated Quickbeam with 8 tweets
+   Generated Samwise Gamgee with 8 tweets
+   Generated Beregond with 9 tweets
+   Generated Tom Bombadil with 8 tweets
+   Generated Meriadoc Brandybuck with 7 tweets
+   Generated Galadriel with 8 tweets
+   Generated Shadowfax with 4 tweets
+   Generated Théoden with 3 tweets
+   Generated Gimli with 1 tweets
+   Generated Éowyn with 9 tweets
+   Generated Treebeard with 7 tweets
+   ```
 
-<section class="tweets">
-  <% @tweets.each do |tweet| %>
-    <div class="card mb-3 border-primary">
-      <div class="card-header">
-        <%= l(tweet.created_at, format: :short) %>
-      </div>
-      <div class="card-body">
-        <blockquote class="blockquote mb-0">
-          <p><%= tweet.body %></p>
-          <footer class="small text-muted">-- <%= link_to tweet.user.name, tweet.user %></footer>
-        </blockquote>
-      </div>
-    </div>
-  <% end %>
-</section>
-```
+   Now if you **reload** the website in the browser, you'll see the **Tweets** page _full of data_.
 
-And in `app/views/layouts/application.html.erb` with the following:
-```
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Tweeter</title>
-    <%= csrf_meta_tags %>
+1. **Design & Layout**
 
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-  </head>
+   Now it's time to fix the design.
 
-  <body>
-    <div class="container mt-5">
+   Start by deleting _all the content_ in `app/assets/stylesheets/scaffolds.scss` and leave the file _empty_.
 
-      <% flash.each do |name, msg| %>
-          <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
-      <% end %>
+   Replace the content of `app/views/tweets/index.html.erb` with the following:
 
-      <%= yield %>
+   ```
+   <h1 class="mb-4">Tweets</h1>
 
-      <footer class="footer">
-        <p>© The Tweet Monsters 2017</p>
-      </footer>
-    </div>
-  </body>
-</html>
-```
+   <section class="tweets">
+     <% @tweets.each do |tweet| %>
+       <div class="card mb-3 border-primary">
+         <div class="card-header">
+          <%= l(tweet.created_at, format: :short) %>
+         </div>
+         <div class="card-body">
+           <blockquote class="blockquote mb-0">
+            <p><%= tweet.body %></p>
+            <footer class="small text-muted">-- <%= link_to tweet.user.name, tweet.user %></footer>
+           </blockquote>
+         </div>
+       </div>
+     <% end %>
+   </section>
+   ```
 
-In the **TweetsController** cleanup all _json_ responses and change the **index** method like so:
+   And in `app/views/layouts/application.html.erb` with the following:
+   ```
+   <!DOCTYPE html>
+   <html>
+   <head>
+     <title>Tweeter</title>
+     <%= csrf_meta_tags %>
 
-```
-def index
-  @tweets = Tweet.eager_load(:user).all
-end
-```
+     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+   </head>
 
-This will load all **users** data in the result and will prevent additional DB requests later.
+   <body>
+     <div class="container mt-5">
+
+     <% flash.each do |name, msg| %>
+      <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
+     <% end %>
+
+     <%= yield %>
+
+     <footer class="footer">
+      <p>© The Tweet Monsters 2017</p>
+     </footer>
+     </div>
+   </body>
+   </html>
+   ```
+
+   In the **TweetsController** cleanup all _json_ responses and change the **index** method like so:
+
+   ```
+   def index
+     @tweets = Tweet.eager_load(:user).all
+   end
+   ```
+
+   This will load all **users** data in the result and will prevent additional DB requests later.
+
+   Now it's time to check what we've acheived and **refresh** the website.
+
+1. **Paging**
+
+   Add the [kaminari](https://github.com/kaminari/kaminari) and [bootstrap4-kaminari-views](https://github.com/KamilDzierbicki/bootstrap4-kaminari-views) gems to your **Gemfile**.
+
+   Install them with `bundle install` and make the following changes in `tweets`:
+
+   1. Change the `index` action in `TweetsController`:
+
+      ```
+      def index
+        @tweets = Tweet.eager_load(:user).page(params[:page]).per(3)
+      end
+      ```
+
+    1. And add the following line at the end of `app/views/tweets/index.html.erb`:
+
+       ```
+       <%= paginate @tweets, window: 1, outer_window: 1, theme: 'twitter-bootstrap-4' %>
+       ```
+
+1. **Display the tweet's user**
+
+   Create a new file `app/views/tweets/_tweet.html.erb` and put inside the _html_ for the **tweet**, that we used in `app/views/tweets/index.html.erb`:
+
+   ```
+   <div class="card mb-3 border-primary">
+     <div class="card-header">
+       <%= l(tweet.created_at, format: :short) %>
+     </div>
+     <div class="card-body">
+       <blockquote class="blockquote mb-0">
+         <p><%= tweet.body %></p>
+         <footer class="small text-muted">-- <%= link_to tweet.user.name, tweet.user %></footer>
+       </blockquote>
+     </div>
+   </div>
+   ```
+
+   Now _substitude_ all these lines in `app/views/tweets/index.html.erb` with just `<%= render tweet %>`.
+
+   Now `app/views/tweets/index.html.erb` should look like:
+
+   ```
+   <h1 class="mb-4">Tweets</h1>
+
+   <section class="tweets">
+     <% @tweets.each do |tweet| %>
+       <%= render tweet %>
+     <% end %>
+   </section>
+
+   <%= paginate @tweets, window: 1, outer_window: 1, theme: 'twitter-bootstrap-4' %>
+   ```
+
+   If we check what happens in the browser, we'll see that all still works like a charm.
+
+   Finally, we can do a bit more _refactoring_ and leave `app/views/tweets/index.html.erb` like this:
+
+   ```
+   <h1 class="mb-4">Tweets</h1>
+
+   <section class="tweets">
+     <%= render @tweets %>
+   </section>
+
+   <%= paginate @tweets, window: 1, outer_window: 1, theme: 'twitter-bootstrap-4' %>
+   ```
+
 
 
