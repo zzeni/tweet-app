@@ -340,5 +340,36 @@ Open your app's initial page (http://localhost:3056/). You'll get errors, becaus
    <%= paginate @tweets, window: 1, outer_window: 1, theme: 'twitter-bootstrap-4' %>
    ```
 
+   Now as we're done with the refactoring, we'll _intoduce_ the following small change to `app/views/tweets/_tweet.html.erb`:
+
+   ```
+     ...
+     <div class="card-body d-flex">
+       <div class="avatar-holder rounded-circle border align-self-baseline mr-4">
+         <%= image_tag tweet.user.avatar.url(:thumb), alt: "#{tweet.user.name} image" %>
+       </div>
+       ...
+     </div>
+   ```
+
+   Then **_we need to change_** (fix) the _paperclip attachment **fallback image path**_ in `app/models/user.rb`:
+   ```
+     has_attached_file :avatar,
+                       styles: { medium: "300x300#", thumb: "100x100#" },
+                       default_url: ":style/missing.png"
+   ```
+
+   Lastly, as a _final touch_ we may add the `romote: true` option to the `pagination` helper in `app/views/tweets/index.html.erb`, which will make a _smooth_ switching between the pages.
+   The change will look like this:
+
+   ```
+   <%= paginate @tweets,
+                window: 1,
+                outer_window: 1,
+                theme: 'twitter-bootstrap-4',
+                remote: true %>
+   ```
+
+   And that's _all_ we need. Now our **home** page (**tweets index**) is _complete_.
 
 
