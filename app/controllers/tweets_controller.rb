@@ -2,7 +2,7 @@ class TweetsController < ApplicationController
   before_action :set_tweet, only: [:show, :edit, :update, :destroy]
 
   def index
-    @tweets = Tweet.eager_load(:user).all
+    @tweets = Tweet.eager_load(:user).page(params[:page]).per(3)
   end
 
   def show

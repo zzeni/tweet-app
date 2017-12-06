@@ -1,62 +1,80 @@
-# Simple Tweeter App
+# A Simple Tweeting App
+
+## Task
+
+Make a web application with **Ruby on Rails** that functions similarly to [Tweeter](https://twitter.com)
 
 ## Creation Instructions
 
-### Models
-
+### Initialization
 ```
 rails new tweeter -T
 cd tweeter
 git commit -m"Initial commit"
 ```
 
-Add the following gems to **Gemfile**: `devise`, `paperclip`, `faker`, `fabrication`, `pry-rails`
+### Models
 
-```
-bundle
+1. Database
 
-rails g scaffold user name:string
-rails g scaffold tweet body:string user:belongs_to
+   Add the following gems to **Gemfile**: [devise](https://github.com/plataformatec/devise), [paperclip](https://github.com/thoughtbot/paperclip), [faker](https://github.com/stympy/faker), [fabrication](https://github.com/paulelliott/fabrication), [pry-rails](https://github.com/rweng/pry-rails), [bootstrap 4](https://github.com/twbs/bootstrap-rubygem).
 
-rails g devise:install
-rails g devise user
+   Make sure you put the new gems in their _corresponding_ groups in the Gemfile.
 
-rails g migration add_avatar_to_users
-```
+   When done, run `bundle install`
 
-Edit all migration files.
+   ```
+   bundle
+   ```
 
-Add index for the **name** column in `users` table.
+   Now it's time to generate your resources:
 
-Set to not null the **name** in `users` and the **body** in `tweets`.
+   ```
+   rails g scaffold user name:string
+   rails g scaffold tweet body:string user:belongs_to
+   rails g devise:install
+   rails g devise user
+   rails g migration add_avatar_to_users
+   ```
 
-Remove all unnecessary stuff from the **devise** migration. You will use only these **devise** modules: _database_authenticatable_, _registerable_, _recoverable_, _rememberable_, _trackable_, _validatable_
+   _Very important step_: Review & edit (where necessary) all migration files.
 
-```
-rails db:migrate
-```
+   It will be a good idea to:
+   - add index for the **name** column in `users` table.
+   - set to `not null` the **name** in `users` and the **body** in `tweets`.
+   - remove all unnecessary stuff from the **devise** migration (you will use only the following devise modules: _database_authenticatable_, _registerable_, _recoverable_, _rememberable_, _trackable_, _validatable_)
 
-Add the following associations to the **User** & **Tweet** models:
+   Now you can execute all migrations:
 
-```
-class User < ApplicationRecord
-  has_many :tweets, dependent: :destroy
-end
+   ```
+   rails db:migrate
+   ```
 
-class Tweet < ApplicationRecord
-  belongs_to :user
-end
-```
+1. Associations
 
-Add the **Paperclip** stuff to the **User**:
+   Add the following associations to the **User** & **Tweet** models:
 
-```
-has_attached_file :avatar,
-                  styles: { medium: "300x300#", thumb: "100x100#" },
-                  default_url: "/images/:style/missing.png"
-```
+   ```
+   class User < ApplicationRecord
+     has_many :tweets, dependent: :destroy
+   end
 
-Add the two **missing.png** images in the corresponding folders.
+   class Tweet < ApplicationRecord
+     belongs_to :user
+     end
+   ```
+
+1. Attached image
+
+   Add the **Paperclip** stuff to the **User**:
+
+   ```
+   has_attached_file :avatar,
+                     styles: { medium: "300x300#", thumb: "100x100#" },
+                     default_url: "/images/:style/missing.png"
+   ```
+
+   Add the two **missing.png** images in the corresponding folders.
 
 ### Routes
 
