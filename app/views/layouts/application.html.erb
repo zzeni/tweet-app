@@ -9,15 +9,17 @@
   </head>
 
   <body>
-    <div class="container mt-5">
+    <div class="container pt-5" id="main-container">
+      <main mb-5>
+        <% flash.each do |name, msg| %>
+            <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
+        <% end %>
 
-      <% flash.each do |name, msg| %>
-          <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
-      <% end %>
+        <%= yield %>
+      </main>
 
-      <%= yield %>
-
-      <footer class="footer">
+      <footer class="footer mt-auto">
+        <hr>
         <p>© The Tweet Monsters 2017</p>
       </footer>
     </div>

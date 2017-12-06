@@ -2,3 +2,16 @@
 @import "scaffolds";
 @import "users";
 @import "tweets";
+
+html, body, #main-container {
+  height: 100%;
+}
+
+#main-container {
+  display: flex;
+  flex-direction: column;
+
+  footer {
+    justify-self: flex-end;
+  }
+}
