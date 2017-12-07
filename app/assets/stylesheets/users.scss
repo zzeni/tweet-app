@@ -1,14 +1,14 @@
-   .user.card .card-image-top {
-     max-width: 300px;
-     margin: 1em auto;
-   }
+.user.card .card-image-top {
+  max-width: 300px;
+  margin: 1em auto;
+}
 
-   @media only screen and (min-width: map-get($grid-breakpoints, sm)) {
-     .user.card {
-       width: 300px;
+@media only screen and (min-width: map-get($grid-breakpoints, sm)) {
+  .user.card {
+    width: 300px;
 
-       .card-image-top {
-         margin: 0;
-       }
-     }
-   }
+    .card-image-top {
+      margin: 0;
+    }
+  }
+}
