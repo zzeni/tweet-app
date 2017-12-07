@@ -10,6 +10,7 @@ gem 'paperclip'
 gem 'bootstrap', '~> 4.0.0.beta2.1'
 gem 'kaminari'
 gem 'bootstrap4-kaminari-views'
+gem 'jquery-rails'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'
