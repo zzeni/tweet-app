@@ -20,6 +20,9 @@ A _step-by-step_ **tutorial** on how to implement a simple **Ruby on Rails** _we
          - [Displaying the author](#landing-5)
       - [Users#show](#usersshow)
       - [Users#index](#usersindex)
+         - [Limiting the access](#usersindex-1)
+         - [Updating the view](#usersindex-1)
+      -
    -
 
 ## Task
@@ -280,7 +283,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    Replace the content of `app/views/tweets/index.html.erb` with the following:
 
-   ```html
+   ```erb
    <h1 class="mb-4">Tweets</h1>
 
    <section class="tweets">
@@ -301,7 +304,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
    ```
 
    And in `app/views/layouts/application.html.erb` with the following:
-   ```html
+   ```erb
    <!DOCTYPE html>
    <html>
    <head>
@@ -360,7 +363,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
     1. And add the following line at the end of `app/views/tweets/index.html.erb`:
 
-       ```html
+       ```erb
        <%= paginate @tweets, window: 1, outer_window: 1, theme: 'twitter-bootstrap-4' %>
        ```
 
@@ -371,7 +374,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    Create a new file `app/views/tweets/_tweet.html.erb` and put inside the _html_ for the **tweet**, that we used in `app/views/tweets/index.html.erb`:
 
-   ```html
+   ```erb
    <div class="card mb-3 border-primary">
      <div class="card-header">
        <%= l(tweet.created_at, format: :short) %>
@@ -389,7 +392,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    Now `app/views/tweets/index.html.erb` should look like:
 
-   ```html
+   ```erb
    <h1 class="mb-4">Tweets</h1>
 
    <section class="tweets">
@@ -405,7 +408,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    Finally, we can do a bit more _refactoring_ and leave `app/views/tweets/index.html.erb` like this:
 
-   ```html
+   ```erb
    <h1 class="mb-4">Tweets</h1>
 
    <section class="tweets">
@@ -417,7 +420,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    Now as we're done with the refactoring, we'll _intoduce_ the following small change to `app/views/tweets/_tweet.html.erb`:
 
-   ```html
+   ```erb
      ...
      <div class="card-body d-flex">
        <div class="avatar-holder rounded-circle border align-self-baseline mr-4">
@@ -472,7 +475,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    And we'll shange a bit the `app/views/layouts/application.html.erb`:
 
-   ```html
+   ```erb
    ...
    <body>
      <div class="container pt-5" id="main-container">
@@ -497,7 +500,7 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
 
    We'll start from the **show** view. Just _paste_ inside the following code:
 
-   ```html
+   ```erb
    <div class="d-lg-flex mt-3">
      <section class="left mr-lg-5 mb-5">
        <h1 class="mb-3"><%= @user.name %>'s Profile</h1>
@@ -628,6 +631,107 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
    ```
 
    And that is _enough_. If you _login_ now, you'll see that you can **edit/delete** only _your own account_.
+
+   <a name="usersindex-2"></a>
+
+1. **Updating the view**
+
+   Let's create a _user partial_, the same way we did it for the `tweets#index`.
+
+   It will be a **new** file, named `app/views/users/_user.html.erb`. For a content, we'll copy the _**user card**_ element from the `users#show`, an make _slight_ modifications in it like:
+   - changed the `@user` _variable_ to the `user` _local assign_
+   - changed the `@tweets` _variable_ to the `tweets` _local assign_
+   - changed the _static **back** link_ to a _dynamic link_, that takes it's text and path from the _local assign_ `links_to`
+
+   Here you can see the result code:
+
+   ```erb
+   <div class="card border-primary user my-3">
+     <%= image_tag user.avatar.url(:medium), class: "card-image-top rounded-circle bg-light" %>
+     <div class="card-header bg-info text-white">
+       <%= user.name %>
+     </div>
+
+     <div class="card-body">
+       <ul>
+         <li class="my-2"><strong>Total tweets:</strong> <%= tweets.count %></li>
+         <li class="my-2"><strong>Total in the last week:</strong> <%= tweets.where('created_at > ?', 1.week.ago).count %></li>
+         <li class="my-2"><strong>Email:</strong> <%= user.email %></li>
+       </ul>
+     </div>
+
+     <% if user == current_user %>
+       <div class="btn-group d-flex">
+         <%= link_to 'Edit', edit_user_path(user), class: 'btn btn-info col-sm-6' %>
+         <%= link_to links_to[:text], links_to[:path], class: 'btn btn-secondary col-sm-6 ml-0' %>
+       </div>
+     <% else %>
+       <%= link_to links_to[:text], links_to[:path], class: 'btn btn-secondary btn-block' %>
+     <% end %>
+   </div>
+   ```
+
+   Next, we'll need to change the content of the `users#index` view with:
+
+   ```erb
+   <h1>Users</h1>
+
+   <div class="users-grid d-flex flex-wrap justify-content-between">
+     <% @users.each do |user| %>
+       <%= render user, tweets: user.tweets, links_to: { text: 'show', path: user } %>
+     <% end %>
+   </div>
+   ```
+
+   If you _refresh_ the `users#index` page now, you'll see that it already looks a lot better.
+
+   Since we have _duplicating code_ in `app/views/users/show.html.erb` and `app/views/users/_user.html.erb`, we'll do a little **refactoring**, by removing the duplicated code from `app/views/users/show.html.erb` and **rendering** the new _partial_ on it's place.
+
+   ```erb
+   <div class="d-lg-flex mt-3">
+     <section class="left mr-lg-5 mb-5">
+       <h1 class="mb-3"><%= @user.name %>'s Profile</h1>
+       <%= render @user, tweets: @user.tweets, links_to: { text: 'Back', path: users_path } %>
+     </section>
+
+     <section class="right">
+       <h2 class="mb-5"><%= @user.name %>'s tweets</h2>
+
+       <%= render @tweets %>
+
+       <%= paginate @tweets, theme: 'twitter-bootstrap-4' %>
+     </section>
+   </div>
+
+   ```
+
+   As a _last step_, we will add **paging** on the `users#index` page. To do so, we have to change the `index` method in `UsersController`:
+
+   ```ruby
+     def index
+       @users = User.page(params[:page]).per(6)
+     end
+   ```
+
+   and add the _pagination_ helper in the **index** view:
+
+   ```erb
+   <h1>Users</h1>
+
+   <div class="users-grid d-flex flex-wrap justify-content-between">
+     <% @users.each do |user| %>
+       <%= render user, tweets: user.tweets, links_to: { text: 'show', path: user } %>
+     <% end %>
+
+     <div class="align-self-end">
+       <%= paginate @users, theme: 'twitter-bootstrap-4' %>
+     </div>
+   </div>
+   ```
+
+
+
+
 
 
 
