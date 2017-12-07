@@ -18,7 +18,7 @@ A _step-by-step_ **tutorial** on how to implement a simple **Ruby on Rails** _we
          - [Design & Layout](#landing-3)
          - [Paging](#landing-4)
          - [Displaying the author](#landing-5)
-      - [User#show](#usershow)
+      - [Users#show](#usersshow)
       - [Users#index](#usersindex)
    -
 
@@ -582,4 +582,55 @@ Open your app's initial page (http://localhost:3056/). You'll get _errors_, beca
    .. and **we're done**! :)
 
    [back to top](a-simple-tweeting-app)
+
+#### Users#index
+
+<a name="usersindex-1"></a>
+1. **Limiting the access**
+
+   _Similarily_ to the **tweets#index** the users **index view** _shows an error_, because it contains links to _paths that are not routed_ (like the link to the **users#new**: `<%= link_to 'New User', new_user_path %>`).
+
+   If we **remove** the failing link, the page will load successfully, but we may notice, that the **edit** and **destroy** actions are *accessible* even though we're currently **not logged in**.
+
+   This can be fixed in our `UsersController`.
+
+   First, remove all the **json-related** code from the controller's **actions** and then add the following **before action**:
+
+   ```ruby
+   before_action :authenticate_user!, except: [:show, :update]
+   ```
+
+   Thus we'll _no longer be able_ to **edit** or **delete** any **user**, without being _logged in_.
+
+   But _that's not enough_.
+
+   Imagine that you're _logged in your profile_. Does this mean that you should be able to _change_ or _delete_ other users profiles ? Well, of course _no_.
+
+   In order to fix that, we need to add yet another restriction in `UsersController`
+
+   ```ruby
+   class UsersController < ApplicationController
+     before_action :authenticate_user!, except: [:show, :index]
+     before_action :set_user, only: [:show, :edit, :update, :destroy]
+     before_action :authenticate_owner!, except: [:show, :index]
+
+     ...
+
+     private
+     ...
+
+     def authenticate_owner!
+      return if current_user == @user
+      flash[:alert] = "This action is not allowed"
+      redirect_back fallback_location: root_path
+     end
+   end
+   ```
+
+   And that is _enough_. If you _login_ now, you'll see that you can **edit/delete** only _your own account_.
+
+
+
+
+
 
