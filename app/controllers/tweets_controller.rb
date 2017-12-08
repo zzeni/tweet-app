@@ -3,7 +3,7 @@ class TweetsController < ApplicationController
   before_action :set_tweet, only: [:edit, :update, :destroy]
 
   def index
-    @tweets = Tweet.eager_load(:user).page(params[:page]).per(3)
+    @tweets = Tweet.order(created_at: 'desc').eager_load(:user).page(params[:page]).per(3)
   end
 
   def show
