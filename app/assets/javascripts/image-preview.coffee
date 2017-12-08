@@ -1,4 +1,4 @@
-$(document).ready ->
+$ ->
   $('.image-preview').on 'click', (event) ->
     $(this).parent().find('.image-input').click()
 
