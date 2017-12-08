@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Tweeter</title>
+    <title>Tweedle.do</title>
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div class="container pt-5" id="main-container">
+    <div class="container" id="main-container">
       <main mb-5>
         <% flash.each do |name, msg| %>
             <%= content_tag(:div, msg, class: "alert alert-#{name == 'notice' ? 'info' : 'danger'}") %>
@@ -23,5 +23,7 @@
         <p>© The Tweet Monsters 2017</p>
       </footer>
     </div>
+
+    <%= render 'layouts/header' %>
   </body>
 </html>
